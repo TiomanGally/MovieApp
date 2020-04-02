@@ -9,6 +9,6 @@ import java.net.URL
 @Configuration
 @ConfigurationProperties(prefix = "imdb")
 class ImdbWebClientConfig {
-    lateinit var url: URL
+    lateinit var baseUrl: URL
     lateinit var apiKey: String
 }
