@@ -28,16 +28,14 @@ class ImdbWebClient(
                 .build()
                 .toUriString()
 
-        log(TargetSystem.IMDB, HttpMethod.GET, uri)
+        log(TargetSystem.IMDB, HttpMethod.GET, imdbWebClientConfig.baseUrl.toString() + uri)
 
         return webClient.get()
                 .uri(uri)
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
                 .bodyToMono(Movie::class.java)
-                .handleClientError(TargetSystem.IMDB) {
-                    this
-                }
+                .handleClientError(TargetSystem.IMDB)
     }
 
     /** Object for holding the consts for this webclient*/

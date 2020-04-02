@@ -1,5 +1,7 @@
 package de.gally.movit.movie
 
+import de.gally.movit.movie.exception.ExceptionMessage
+import de.gally.movit.movie.exception.MovieInvalidException
 import de.gally.movit.movie.webclient.ImdbWebClient
 import org.slf4j.LoggerFactory
 import org.springframework.http.MediaType
@@ -10,20 +12,26 @@ import reactor.core.publisher.Mono
 @RestController
 @RequestMapping("v1/movies")
 class MovieController(
-        private val imdbWebClient: ImdbWebClient
+        private val imdbWebClient: ImdbWebClient,
+        private val movieRepository: MovieRepository
 ) {
     private val logger = LoggerFactory.getLogger(this::class.java)
 
     /** Returns all [Movie]s from database */
     @GetMapping(produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun getAllMovies() {
-
+    fun getAllMovies(): Mono<ResponseEntity<MutableList<Movie>>> {
+        return movieRepository
+                .findAll()
+                .collectList()
+                .map { ResponseEntity.ok(it) }
     }
 
     /** Returns a [Movie] found by its [title] */
     @GetMapping("/{title}", produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun getMovieByTitle(@PathVariable("title") title: String) {
-
+    fun getMovieByTitle(@PathVariable("title") title: String): Mono<ResponseEntity<Movie>> {
+        return movieRepository
+                .getMovieByTitle(title)
+                .map { ResponseEntity.ok(it) }
     }
 
     /** Request a [Movie] from IMDB and returns it*/
@@ -37,7 +45,12 @@ class MovieController(
 
     /** Saves a new [Movie] in database */
     @PostMapping
-    fun saveMovie(movie: Movie) {
-
+    fun saveMovie(movie: Movie): Mono<ResponseEntity<Movie>> {
+        if (movie.title.isBlank()) {
+            throw MovieInvalidException(ExceptionMessage.INVALID_MOVIE_PAYLOAD)
+        }
+        return movieRepository
+                .save(movie)
+                .map { ResponseEntity.ok(it) }
     }
 }

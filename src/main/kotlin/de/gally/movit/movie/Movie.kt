@@ -2,14 +2,12 @@ package de.gally.movit.movie
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
-import org.springframework.data.mongodb.core.index.Indexed
 import org.springframework.data.mongodb.core.mapping.Document
 
 @Document(collection = "Movie")
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class Movie(
 
-        @Indexed(unique = true)
         @JsonProperty("Title")
         var title: String = "",
 

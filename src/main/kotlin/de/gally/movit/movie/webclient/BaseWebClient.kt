@@ -5,11 +5,8 @@ import de.gally.movit.movie.exception.InternalErrorException
 import de.gally.movit.movie.exception.ServiceIsUnavailableException
 import de.gally.movit.movie.exception.UnauthorizedException
 import org.slf4j.LoggerFactory
-import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
-import org.springframework.http.MediaType
-import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import reactor.core.publisher.Mono
 import java.net.ConnectException
@@ -19,18 +16,9 @@ abstract class BaseWebClient {
 
     private val logger = LoggerFactory.getLogger(this::class.java)
 
-    /**
-     * Sets all required headers for MBC and also the user for Authorization
-     *
-     * @param user for the target system
-     */
-    fun WebClient.Builder.setHeaderWithUser(user: WebClientUser): WebClient.Builder {
-        return this.defaultHeaders {
-            it.apply {
-                this.set(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                this.setBasicAuth(user.username, user.password)
-            }
-        }
+    /** If the WebClient returned a not handled status this will log it */
+    fun WebClientResponseException.logNotHandledError(targetSystem: TargetSystem): WebClientResponseException {
+        return this.also { logger.warn("Error with [${this.statusCode}] and body [${this.responseBodyAsString}] was returned from [$targetSystem]") }
     }
 
     /** Logs the Request for a WebClient */
@@ -44,7 +32,7 @@ abstract class BaseWebClient {
      * It is possible to deal with the [WebClientResponseException] which is thrown by the client. And this contains the error
      * and the statusCode.
      */
-    fun <T> Mono<T>.handleClientError(targetSystem: TargetSystem, specificCalls: WebClientResponseException.() -> Throwable): Mono<T> {
+    fun <T> Mono<T>.handleClientError(targetSystem: TargetSystem, specificCalls: WebClientResponseException.() -> Throwable = { this.logNotHandledError(targetSystem) }): Mono<T> {
         return this.onErrorMap {
             when (it) {
                 is WebClientResponseException -> {
@@ -77,7 +65,4 @@ abstract class BaseWebClient {
             val unknownHostMessage: ExceptionMessage) {
         IMDB(ExceptionMessage.IMDB_NOT_AVAILABLE, ExceptionMessage.IMDB_UNAUTHORIZED, ExceptionMessage.IMDB_INTERNAL_SERVER_ERROR, ExceptionMessage.IMDB_UNKNOWN_HOST)
     }
-
-    /** Holds username and password for a webClient */
-    data class WebClientUser(val username: String, val password: String)
 }
