@@ -1,0 +1,32 @@
+# Docker compose file for executing movieit (backend, frontend and database)
+version: '3.7'
+
+services:
+
+  mongodb:
+      image: mongo
+      container_name: tiosMongo
+      restart: always
+      environment:
+        MONGO_INITDB_DATABASE: movieitDb
+        MONGO_INITDB_ROOT_PASSWORD: movieitPassword
+        MONGO_INITDB_ROOT_USERNAME: movieitUser
+      ports:
+          - 27017:27017
+      volumes:
+          - ./db/movieituser.js:/docker-entrypoint-initdb.d/movieituser.js:ro
+
+  backend:
+      image: milchkarton/movieit:backend
+      container_name: tiosReactiveBackend
+      labels:
+          mail: "tioman@gally.de"
+          name: "Tioman Gally"
+      ports:
+          - 8080:8080
+      depends_on:
+          - mongodb
+      environment:
+         - "SPRING_PROFILES_ACTIVE=nonprod"
+      links:
+          - mongodb
