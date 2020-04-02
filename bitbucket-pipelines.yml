@@ -1,0 +1,26 @@
+image: maven:3.3.9
+
+pipelines:
+  branches:
+    master:
+      - step:
+          name: Run Tests
+          script:
+            - mvn test
+      - step:
+          name: Push Docker Image to Registry
+          services:
+            - docker
+          script:
+            - mvn clean install
+            - docker build -t milchkarton/movieit:backend-v$BITBUCKET_BUILD_NUMBER .
+            - docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
+            - docker push $DOCKER_USER/movieit:backend-v$BITBUCKET_BUILD_NUMBER
+
+  default:
+    - step:
+        name: Verify that branch works
+        caches:
+          - maven
+        script:
+          - mvn clean install

@@ -13,7 +13,7 @@ class ImdbWebClient(
         private val imdbWebClientConfig: ImdbWebClientConfig
 ) : BaseWebClient() {
 
-    /** WebClient for requesting data against IMDB*/
+    /** WebClient for requesting data against IMDB */
     private val webClient by lazy {
         WebClient.builder()
                 .baseUrl(imdbWebClientConfig.baseUrl.toString())
@@ -38,7 +38,7 @@ class ImdbWebClient(
                 .handleClientError(TargetSystem.IMDB)
     }
 
-    /** Object for holding the consts for this webclient*/
+    /** Object for holding the constants for this webclient */
     private companion object {
         const val API_KEY = "apikey"
         const val TITLE = "t"
