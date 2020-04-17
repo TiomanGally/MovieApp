@@ -1,4 +1,4 @@
-package de.gally.movit.movie.exception
+package de.gally.movit.exception
 
 import org.springframework.boot.configurationprocessor.json.JSONObject
 import org.springframework.http.HttpStatus

@@ -1,7 +1,7 @@
 package de.gally.movit.movie
 
-import de.gally.movit.movie.exception.ExceptionMessage
-import de.gally.movit.movie.exception.MovieInvalidException
+import de.gally.movit.exception.ExceptionMessage
+import de.gally.movit.exception.MovieInvalidException
 import de.gally.movit.movie.webclient.ImdbWebClient
 import org.slf4j.LoggerFactory
 import org.springframework.http.MediaType
@@ -34,7 +34,7 @@ class MovieController(
                 .map { ResponseEntity.ok(it) }
     }
 
-    /** Request a [Movie] from IMDB and returns it*/
+    /** Request a [Movie] from IMDB and returns it */
     @GetMapping("/{title}/request", produces = [MediaType.APPLICATION_JSON_VALUE])
     fun requestNewMovie(@PathVariable("title") title: String): Mono<ResponseEntity<Movie>> {
         return imdbWebClient
@@ -45,7 +45,7 @@ class MovieController(
 
     /** Saves a new [Movie] in database */
     @PostMapping
-    fun saveMovie(movie: Movie): Mono<ResponseEntity<Movie>> {
+    fun saveMovie(@RequestBody movie: Movie): Mono<ResponseEntity<Movie>> {
         if (movie.title.isBlank()) {
             throw MovieInvalidException(ExceptionMessage.INVALID_MOVIE_PAYLOAD)
         }

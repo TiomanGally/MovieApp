@@ -18,9 +18,16 @@
         <java.version>11</java.version>
         <kotlin.version>1.3.70</kotlin.version>
         <faster.xml.version>2.9.6</faster.xml.version>
+        <strikt.version>0.22.1</strikt.version>
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>io.strikt</groupId>
+            <artifactId>strikt-core</artifactId>
+            <version>${strikt.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-mongodb-reactive</artifactId>

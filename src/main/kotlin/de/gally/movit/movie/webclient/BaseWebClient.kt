@@ -1,9 +1,9 @@
 package de.gally.movit.movie.webclient
 
-import de.gally.movit.movie.exception.ExceptionMessage
-import de.gally.movit.movie.exception.InternalErrorException
-import de.gally.movit.movie.exception.ServiceIsUnavailableException
-import de.gally.movit.movie.exception.UnauthorizedException
+import de.gally.movit.exception.ExceptionMessage
+import de.gally.movit.exception.InternalErrorException
+import de.gally.movit.exception.ServiceIsUnavailableException
+import de.gally.movit.exception.UnauthorizedException
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
