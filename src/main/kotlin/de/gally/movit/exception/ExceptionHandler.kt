@@ -19,10 +19,7 @@ fun Throwable.toErrorResponse(): Mono<ResponseEntity<String>> {
     fun createMonoResponseEntity(httpStatus: HttpStatus, message: String): Mono<ResponseEntity<String>> {
         return ResponseEntity
                 .status(httpStatus)
-                .body(JSONObject()
-                        .put("message", message)
-                        .put("timestamp", LocalDateTime.now())
-                        .toString())
+                .body(Message(message).build())
                 .toMono()
     }
 
@@ -37,6 +34,7 @@ fun Throwable.toErrorResponse(): Mono<ResponseEntity<String>> {
     return createMonoResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, ExceptionMessage.INTERNAL_SERVER_ERROR.message)
 }
 
+/** Holds all exceptionMessages which can be thrown in MoviT */
 enum class ExceptionMessage(val message: String) {
     INVALID_MOVIE_PAYLOAD("Received Movie is invalid"),
     IMDB_NOT_AVAILABLE("IMDB is currently not available"),
@@ -44,4 +42,12 @@ enum class ExceptionMessage(val message: String) {
     IMDB_UNKNOWN_HOST("Could not resolve IMDB URI"),
     IMDB_INTERNAL_SERVER_ERROR("IMDB fucked something up"),
     INTERNAL_SERVER_ERROR("Something went really wrong :(")
+}
+
+/** Creates a JSON exception message info box */
+data class Message(val message: String) {
+    fun build() = JSONObject()
+            .put("message", message)
+            .put("timestamp", LocalDateTime.now())
+            .toString()
 }
