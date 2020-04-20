@@ -13,9 +13,9 @@ pipelines:
             - docker
           script:
             - mvn clean install
-            - docker build -t milchkarton/movieit:backend-v$BITBUCKET_BUILD_NUMBER .
+            - docker build -t milchkarton/movieit:movie-backend-v$BITBUCKET_BUILD_NUMBER .
             - docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
-            - docker push $DOCKER_USER/movieit:backend-v$BITBUCKET_BUILD_NUMBER
+            - docker push $DOCKER_USER/movieit:movie-backend-v$BITBUCKET_BUILD_NUMBER
 
   default:
     - step:
