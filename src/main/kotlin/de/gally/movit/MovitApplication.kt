@@ -1,6 +1,7 @@
 package de.gally.movit
 
 import de.gally.movit.exception.Message
+import de.gally.movit.movie.MovieService
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import org.springframework.context.annotation.Bean
@@ -25,12 +26,20 @@ fun isAlive(request: ServerRequest) = ServerResponse.ok().contentType(APPLICATIO
 class RouterService {
 
     @Bean
-    fun roomsRouter() = router {
-        accept(APPLICATION_JSON)
-                .nest {
+    fun roomsRouter(service: MovieService) =
+            router {
+                accept(APPLICATION_JSON).nest {
+                    "/api".nest {
+                        "/movies".nest {
+                            GET("/", service::getAllMovies)
+                            GET("/{title}", service::getMovieByTitle)
+                            GET("/{title}/imdb", service::requestFromImdb)
+                            POST("/", service::saveMovie)
+                        }
+                    }
                     "/alive".nest {
                         GET("/", ::isAlive)
                     }
                 }
-    }
+            }
 }
