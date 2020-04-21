@@ -19,6 +19,7 @@
         <kotlin.version>1.3.70</kotlin.version>
         <faster.xml.version>2.9.6</faster.xml.version>
         <strikt.version>0.22.1</strikt.version>
+        <mocking.version>1.6.0</mocking.version>
     </properties>
 
     <repositories>
@@ -29,6 +30,13 @@
     </repositories>
 
     <dependencies>
+        <dependency>
+            <groupId>com.nhaarman</groupId>
+            <artifactId>mockito-kotlin</artifactId>
+            <version>${mocking.version}</version>
+            <scope>test</scope>
+        </dependency>
+
         <dependency>
             <groupId>io.strikt</groupId>
             <artifactId>strikt-core</artifactId>
@@ -89,7 +97,6 @@
 
     <build>
         <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
-        <testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>

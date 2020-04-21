@@ -19,8 +19,6 @@ fun main(args: Array<String>) {
     runApplication<MovitApplication>(*args)
 }
 
-@Suppress("UNUSED_PARAMETER")
-fun isAlive(request: ServerRequest) = ServerResponse.ok().contentType(APPLICATION_JSON).body(Message("App is alive!").build().toMono(), String::class.java)
 
 @Configuration
 class RouterService {
@@ -42,4 +40,7 @@ class RouterService {
                     }
                 }
             }
+
+    @Suppress("UNUSED_PARAMETER")
+    fun isAlive(request: ServerRequest) = ServerResponse.ok().contentType(APPLICATION_JSON).body(Message("App is alive!").build().toMono(), String::class.java)
 }

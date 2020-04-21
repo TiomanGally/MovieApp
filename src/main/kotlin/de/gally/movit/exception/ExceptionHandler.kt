@@ -12,7 +12,6 @@ open class InvalidException(message: ExceptionMessage) : MoviTException(message.
 class UnauthorizedException(message: ExceptionMessage) : MoviTException(message.message)
 class ServiceIsUnavailableException(message: ExceptionMessage) : MoviTException(message.message)
 class InternalErrorException(message: ExceptionMessage) : MoviTException(message.message)
-class MovieInvalidException(message: ExceptionMessage) : InvalidException(message)
 
 /** If an error is thrown this will parse the error to a [ResponseEntity] */
 fun Throwable.toErrorResponse(): Mono<ResponseEntity<String>> {
@@ -36,7 +35,6 @@ fun Throwable.toErrorResponse(): Mono<ResponseEntity<String>> {
 
 /** Holds all exceptionMessages which can be thrown in MoviT */
 enum class ExceptionMessage(val message: String) {
-    INVALID_MOVIE_PAYLOAD("Received Movie is invalid"),
     IMDB_NOT_AVAILABLE("IMDB is currently not available"),
     IMDB_UNAUTHORIZED("User for IMDB is unauthorized"),
     IMDB_UNKNOWN_HOST("Could not resolve IMDB URI"),

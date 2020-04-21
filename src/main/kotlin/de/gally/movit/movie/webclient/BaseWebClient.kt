@@ -17,7 +17,7 @@ abstract class BaseWebClient {
     private val logger = LoggerFactory.getLogger(this::class.java)
 
     /** If the WebClient returned a not handled status this will log it */
-    fun WebClientResponseException.logNotHandledError(targetSystem: TargetSystem): WebClientResponseException {
+    private fun WebClientResponseException.logNotHandledError(targetSystem: TargetSystem): WebClientResponseException {
         return this.also { logger.warn("Error with [${this.statusCode}] and body [${this.responseBodyAsString}] was returned from [$targetSystem]") }
     }
 
@@ -49,13 +49,6 @@ abstract class BaseWebClient {
             }
         }
     }
-
-    /** Param Values have to contain an ':' in front of the param because it will be replaced with a value */
-    companion object ParamValues {
-    }
-
-    /** Replaces a param (Regex: ':paramName') with its value. */
-    fun String.setParam(param: String, value: String) = this.replace(param, value)
 
     /** This holds the special [ExceptionMessage] for a specific target system if something bad happens */
     enum class TargetSystem(

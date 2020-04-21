@@ -1,5 +1,6 @@
 package de.gally.movit.movie
 
+import de.gally.movit.exception.Message
 import de.gally.movit.movie.webclient.ImdbWebClient
 import org.slf4j.LoggerFactory
 import org.springframework.http.MediaType.APPLICATION_JSON
@@ -7,6 +8,7 @@ import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.server.ServerRequest
 import org.springframework.web.reactive.function.server.ServerResponse
 import reactor.core.publisher.Mono
+import reactor.kotlin.core.publisher.switchIfEmpty
 import reactor.kotlin.core.publisher.toMono
 
 @Service
@@ -27,30 +29,35 @@ class MovieService(
         return movieRepository
                 .getMovieByTitle(request.pathVariable("title"))
                 .doOnNext { logger.info("Successfully found movie with title [${it.title}] from database") }
-                .createResponse()
+                .flatMap { ServerResponse.ok().contentType(APPLICATION_JSON).body(it.toMono(), Movie::class.java) }
+                .switchIfEmpty(ServerResponse.notFound().build())
     }
 
     /** Request a [Movie] from IMDB and returns it */
     fun requestFromImdb(request: ServerRequest): Mono<ServerResponse> {
         return imdbWebClient
                 .requestMovieByTitle(request.pathVariable("title"))
-                .createResponse()
+                .flatMap { ServerResponse.ok().contentType(APPLICATION_JSON).body(it.toMono(), Movie::class.java) }
+                .switchIfEmpty(ServerResponse.notFound().build())
     }
 
-    /** Saves a new [Movie] in database */
+    /** Saves a new [Movie] in database or finds it if it does exist already */
     fun saveMovie(request: ServerRequest): Mono<ServerResponse> {
         return request
                 .bodyToMono(Movie::class.java)
-                .flatMap {
-                    if (it.title.isNotBlank())
-                        movieRepository.save(it)
-                    else Mono.empty()
-                }.doOnNext { logger.info("Successfully saved movie with title [${it.title}] in database") }
-                .createResponse()
+                .flatMap { movie ->
+                    movieRepository
+                            .getMovieByTitle(movie.title)
+                            .doOnNext { logger.info("Successfully found movie with title [${it.title}] in database") }
+                            .switchIfEmpty {
+                                if (movie.title.isNotBlank())
+                                    movieRepository
+                                            .save(movie)
+                                            .doOnNext { logger.info("Successfully persisted movie with title [${it.title}] in database") }
+                                else Mono.empty()
+                            }
+                            .flatMap { ServerResponse.ok().contentType(APPLICATION_JSON).body(it.toMono(), Movie::class.java) }
+                            .switchIfEmpty(ServerResponse.badRequest().body(Message("Movie has empty title").build().toMono(), String::class.java))
+                }
     }
-
-    /** Returns a [ServerResponse] if the movie is present. Otherwise a 404 is returned */
-    private fun Mono<Movie>.createResponse() = this
-            .flatMap { ServerResponse.ok().contentType(APPLICATION_JSON).body(it.toMono(), Movie::class.java) }
-            .switchIfEmpty(ServerResponse.notFound().build())
 }
