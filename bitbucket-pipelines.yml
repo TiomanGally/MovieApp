@@ -5,21 +5,25 @@ pipelines:
     master:
       - step:
           name: Run Tests
+          caches:
+            - maven
           script:
             - mvn test
       - step:
           name: Push Docker Image to Registry
+          caches:
+            - maven
           services:
             - docker
           script:
-            - mvn clean install
-            - docker build -t milchkarton/movieit:movie-backend-v$BITBUCKET_BUILD_NUMBER .
+            - mvn package -Dmaven.test.skip=true
+            - docker build -t milchkarton/movie:movie-backend-v$BITBUCKET_BUILD_NUMBER .
             - docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
-            - docker push $DOCKER_USER/movieit:movie-backend-v$BITBUCKET_BUILD_NUMBER
+            - docker push $DOCKER_USER/movie:movie-backend-v$BITBUCKET_BUILD_NUMBER
 
   default:
     - step:
-        name: Verify that branch works
+        name: Verify that branch build is success
         caches:
           - maven
         script:

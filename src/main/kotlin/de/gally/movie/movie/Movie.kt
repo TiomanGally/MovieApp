@@ -1,4 +1,4 @@
-package de.gally.movit.movie
+package de.gally.movie.movie
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty

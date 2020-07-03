@@ -1,9 +1,9 @@
-package de.gally.movit.movie.webclient
+package de.gally.movie.movie.webclient
 
-import de.gally.movit.exception.ExceptionMessage
-import de.gally.movit.exception.InternalErrorException
-import de.gally.movit.exception.ServiceIsUnavailableException
-import de.gally.movit.exception.UnauthorizedException
+import de.gally.movie.exception.ExceptionMessage
+import de.gally.movie.exception.InternalErrorException
+import de.gally.movie.exception.ServiceIsUnavailableException
+import de.gally.movie.exception.UnauthorizedException
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
@@ -32,7 +32,12 @@ abstract class BaseWebClient {
      * It is possible to deal with the [WebClientResponseException] which is thrown by the client. And this contains the error
      * and the statusCode.
      */
-    fun <T> Mono<T>.handleClientError(targetSystem: TargetSystem, specificCalls: WebClientResponseException.() -> Throwable = { this.logNotHandledError(targetSystem) }): Mono<T> {
+    fun <T> Mono<T>.handleClientError(
+        targetSystem: TargetSystem,
+        specificCalls: WebClientResponseException.() -> Throwable = {
+            this.logNotHandledError(targetSystem)
+        }
+    ): Mono<T> {
         return this.onErrorMap {
             when (it) {
                 is WebClientResponseException -> {
@@ -52,10 +57,16 @@ abstract class BaseWebClient {
 
     /** This holds the special [ExceptionMessage] for a specific target system if something bad happens */
     enum class TargetSystem(
-            val notAvailableMessage: ExceptionMessage,
-            val unauthorizedMessage: ExceptionMessage,
-            val internalErrorMessage: ExceptionMessage,
-            val unknownHostMessage: ExceptionMessage) {
-        IMDB(ExceptionMessage.IMDB_NOT_AVAILABLE, ExceptionMessage.IMDB_UNAUTHORIZED, ExceptionMessage.IMDB_INTERNAL_SERVER_ERROR, ExceptionMessage.IMDB_UNKNOWN_HOST)
+        val notAvailableMessage: ExceptionMessage,
+        val unauthorizedMessage: ExceptionMessage,
+        val internalErrorMessage: ExceptionMessage,
+        val unknownHostMessage: ExceptionMessage
+    ) {
+        IMDB(
+            ExceptionMessage.IMDB_NOT_AVAILABLE,
+            ExceptionMessage.IMDB_UNAUTHORIZED,
+            ExceptionMessage.IMDB_INTERNAL_SERVER_ERROR,
+            ExceptionMessage.IMDB_UNKNOWN_HOST
+        )
     }
 }

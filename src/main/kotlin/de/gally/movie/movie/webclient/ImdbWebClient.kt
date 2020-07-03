@@ -1,6 +1,6 @@
-package de.gally.movit.movie.webclient
+package de.gally.movie.movie.webclient
 
-import de.gally.movit.movie.Movie
+import de.gally.movie.movie.Movie
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpMethod
 import org.springframework.http.MediaType
@@ -12,7 +12,7 @@ import reactor.kotlin.core.publisher.toMono
 
 @Service
 class ImdbWebClient(
-        private val imdbWebClientConfig: ImdbWebClientConfig
+    private val imdbWebClientConfig: ImdbWebClientConfig
 ) : BaseWebClient() {
 
     private val logger = LoggerFactory.getLogger(this::class.java)
@@ -20,28 +20,28 @@ class ImdbWebClient(
     /** WebClient for requesting data against IMDB */
     private val webClient by lazy {
         WebClient.builder()
-                .baseUrl(imdbWebClientConfig.baseUrl.toString())
-                .build()
+            .baseUrl(imdbWebClientConfig.baseUrl.toString())
+            .build()
     }
 
     /** Requesting a [Movie] by its [title] from IMDB */
     fun requestMovieByTitle(title: String): Mono<Movie> {
         val uri = UriComponentsBuilder.newInstance()
-                .queryParam(API_KEY, imdbWebClientConfig.apiKey)
-                .queryParam(TITLE, title)
-                .build()
-                .toUriString()
+            .queryParam(API_KEY, imdbWebClientConfig.apiKey)
+            .queryParam(TITLE, title)
+            .build()
+            .toUriString()
 
         log(TargetSystem.IMDB, HttpMethod.GET, imdbWebClientConfig.baseUrl.toString() + uri)
 
         return webClient.get()
-                .uri(uri)
-                .accept(MediaType.APPLICATION_JSON)
-                .retrieve()
-                .bodyToMono(Movie::class.java)
-                .handleClientError(TargetSystem.IMDB)
-                .doOnNext { logger.info("Successfully requested IMDB for received Movie with title [$title]") }
-                .flatMap { if (it.doesExist()) it.toMono() else Mono.empty() }
+            .uri(uri)
+            .accept(MediaType.APPLICATION_JSON)
+            .retrieve()
+            .bodyToMono(Movie::class.java)
+            .handleClientError(TargetSystem.IMDB)
+            .doOnNext { logger.info("Successfully requested IMDB for received Movie with title [$title]") }
+            .flatMap { if (it.doesExist()) it.toMono() else Mono.empty() }
     }
 
     /** Object for holding the constants for this webclient */

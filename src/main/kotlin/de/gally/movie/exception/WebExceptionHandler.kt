@@ -1,4 +1,4 @@
-package de.gally.movit.exception
+package de.gally.movie.exception
 
 import org.slf4j.LoggerFactory
 import org.springframework.http.MediaType

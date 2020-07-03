@@ -1,4 +1,4 @@
-package de.gally.movit.movie.webclient
+package de.gally.movie.movie.webclient
 
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.context.annotation.Configuration

@@ -1,4 +1,4 @@
-package de.gally.movit.exception
+package de.gally.movie.exception
 
 import org.springframework.boot.configurationprocessor.json.JSONObject
 import org.springframework.http.HttpStatus
@@ -17,9 +17,9 @@ class InternalErrorException(message: ExceptionMessage) : MoviTException(message
 fun Throwable.toErrorResponse(): Mono<ResponseEntity<String>> {
     fun createMonoResponseEntity(httpStatus: HttpStatus, message: String): Mono<ResponseEntity<String>> {
         return ResponseEntity
-                .status(httpStatus)
-                .body(Message(message).build())
-                .toMono()
+            .status(httpStatus)
+            .body(Message(message).build())
+            .toMono()
     }
 
     if (this is MoviTException) {
@@ -45,7 +45,7 @@ enum class ExceptionMessage(val message: String) {
 /** Creates a JSON exception message info box */
 data class Message(val message: String) {
     fun build() = JSONObject()
-            .put("message", message)
-            .put("timestamp", LocalDateTime.now())
-            .toString()
+        .put("message", message)
+        .put("timestamp", LocalDateTime.now())
+        .toString()
 }

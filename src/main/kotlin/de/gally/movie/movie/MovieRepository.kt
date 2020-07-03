@@ -1,4 +1,4 @@
-package de.gally.movit.movie
+package de.gally.movie.movie
 
 import org.springframework.data.mongodb.repository.ReactiveMongoRepository
 import reactor.core.publisher.Mono
